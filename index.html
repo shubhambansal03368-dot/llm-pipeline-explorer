@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='12 2 2 7 12 12 22 7 12 2'/><polyline points='2 17 12 22 22 17'/><polyline points='2 12 12 17 22 12'/></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LLM Pipeline Explorer — Interactive Educational Laboratory</title>
+    <meta name="description" content="Explore how machines transform human language into numerical representations through vocabulary building, tokenization, token IDs, word embeddings, and 3D vector-space visualization." />
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Pure CSS3 Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Three.js and OrbitControls via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  </head>
+  <body>
+    <!-- 1. Header -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="brand-wrapper">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="brand-titles">
+            <h1>
+              LLM Pipeline Explorer
+              <span class="badge-tag">Educational Simulator</span>
+            </h1>
+            <p class="subtitle">
+              Explore how machines transform human language into numerical representations.
+            </p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <div class="presets-group">
+            <span class="presets-label">Presets:</span>
+            <button class="preset-btn" data-preset="ai_intro" title="AI, models, and machine learning">AI & Tech</button>
+            <button class="preset-btn" data-preset="semantic_clusters" title="Royalty, transport, and fruits">Semantics</button>
+            <button class="preset-btn" data-preset="morphology_spelling" title="Morphological variations">Spelling</button>
+            <button class="preset-btn" data-preset="nature_cosmos" title="Planets, sun, moon, and animals">Nature</button>
+          </div>
+
+          <button id="global-reset-btn" class="btn-secondary" title="Reset to initial demo text">
+            <span>↺</span> Reset
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. Horizontal Pipeline Progress Indicator -->
+    <nav class="pipeline-progress-bar" aria-label="Pipeline Stages">
+      <div class="container pipeline-steps">
+        <a href="#section-vocab-builder" class="pipeline-step active">
+          <div class="step-icon-box">📄</div>
+          <div class="step-info">
+            <div class="step-header-row">
+              <span class="step-num">01</span>
+              <span class="step-title">Text Input</span>
+            </div>
+            <span class="step-sub" id="step-sub-1">Raw sentences</span>
+          </div>
+        </a>
+
+        <span class="step-arrow">→</span>
+
+        <a href="#section-vocab-table" class="pipeline-step">
+          <div class="step-icon-box">📖</div>
+          <div class="step-info">
+            <div class="step-header-row">
+              <span class="step-num">02</span>
+              <span class="step-title">Vocabulary</span>
+            </div>
+            <span class="step-sub" id="step-sub-2">Unique tokens</span>
+          </div>
+        </a>
+
+        <span class="step-arrow">→</span>
+
+        <a href="#section-token-stream" class="pipeline-step">
+          <div class="step-icon-box">🔢</div>
+          <div class="step-info">
+            <div class="step-header-row">
+              <span class="step-num">03</span>
+              <span class="step-title">Token IDs</span>
+            </div>
+            <span class="step-sub">0, 1, 2, ...</span>
+          </div>
+        </a>
+
+        <span class="step-arrow">→</span>
+
+        <a href="#section-embedding-explorer" class="pipeline-step">
+          <div class="step-icon-box">📦</div>
+          <div class="step-info">
+            <div class="step-header-row">
+              <span class="step-num">04</span>
+              <span class="step-title">Embeddings</span>
+            </div>
+            <span class="step-sub" id="step-sub-4">Spelling 16-D</span>
+          </div>
+        </a>
+
+        <span class="step-arrow">→</span>
+
+        <a href="#section-3d-viz" class="pipeline-step">
+          <div class="step-icon-box">🧭</div>
+          <div class="step-info">
+            <div class="step-header-row">
+              <span class="step-num">05</span>
+              <span class="step-title">Vector Space</span>
+            </div>
+            <span class="step-sub">3D Geometry</span>
+          </div>
+        </a>
+      </div>
+    </nav>
+
+    <!-- 3. Main Educational Application Body -->
+    <main class="container main-content">
+      <!-- PART 1: VOCABULARY BUILDER -->
+      <section id="section-vocab-builder">
+        <div class="section-header">
+          <span class="section-tag">01 — Build Your Vocabulary</span>
+          <h2 class="section-title">Tokenization & Vocabulary Creation</h2>
+          <p class="section-desc">
+            Enter text and discover how an LLM tokenizer builds a vocabulary from unique words.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title-row">
+            <span class="card-label">Human Language Input Area</span>
+          </div>
+
+          <textarea
+            id="vocab-input"
+            class="text-input-field"
+            placeholder="Enter 5–10 sentences here. For example: Artificial intelligence is transforming technology. Language models learn patterns from text..."
+          ></textarea>
+
+          <!-- Live metrics bar -->
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-label">Live Words</div>
+              <div class="stat-value" id="stat-live-words">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Token Occurrences</div>
+              <div class="stat-value primary" id="stat-token-occur">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Unique Words</div>
+              <div class="stat-value indigo" id="stat-unique-words">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Character Count</div>
+              <div class="stat-value" id="stat-char-count">0</div>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button id="clear-vocab-btn" class="btn-secondary">
+              🗑️ Clear Text
+            </button>
+            <button id="build-vocab-btn" class="btn-primary">
+              📖 Build Vocabulary
+            </button>
+          </div>
+        </div>
+
+        <!-- Stage 3: Token ID Numerical Sequence Viewer -->
+        <div id="section-token-stream">
+          <div id="token-sequence-viewer" class="token-stream-container">
+            <div class="stream-header">
+              <div class="stream-title-group">
+                <div class="stream-icon">#</div>
+                <h4>Stage 3: Token ID Numerical Sequence</h4>
+              </div>
+              <span id="token-stream-count" class="font-mono text-muted" style="font-size: 0.75rem;"></span>
+            </div>
+            <p class="section-desc" style="font-size: 0.8rem; margin-bottom: 0.8rem;">
+              Here is how a computer sees text computationally: each extracted token is mapped to its assigned integer ID. Click any token chip to inspect its vector embedding.
+            </p>
+
+            <div class="tensor-box">
+              <div class="tensor-header">Tensor Input Stream (Token IDs Array)</div>
+              <div id="token-ids-array" class="tensor-array"></div>
+            </div>
+
+            <div id="token-badges-list" class="token-badges-wrap"></div>
+          </div>
+        </div>
+
+        <!-- Structured 3-Column Vocabulary Table -->
+        <div id="section-vocab-table" class="card table-card">
+          <div class="table-toolbar">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h3 style="font-size: 1.05rem;">Vocabulary Lookup Table</h3>
+                <span id="vocab-size-badge" class="badge-tag">0 Unique Tokens</span>
+              </div>
+              <p class="subtitle">
+                Preserves first-occurrence order. Click any row or token to inspect details.
+              </p>
+            </div>
+
+            <div class="table-search-box">
+              <input type="text" id="vocab-search-input" placeholder="Search token or ID..." />
+            </div>
+          </div>
+
+          <div class="table-frame">
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="col-id sortable-th" data-sort="id">ID ↕</th>
+                    <th class="col-token sortable-th" data-sort="token">Token (Word) ↕</th>
+                    <th class="col-count sortable-th" data-sort="count">Count ↕</th>
+                  </tr>
+                </thead>
+                <tbody id="vocab-table-body">
+                  <!-- Populated by script.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Vocabulary size and explanations -->
+          <div style="margin-top: 1.25rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.75rem;">
+              <div>
+                <strong>Vocabulary Size: </strong>
+                <span id="vocab-total-badge" class="badge-tag font-mono">0 unique tokens</span>
+              </div>
+              <span class="text-muted" style="font-size: 0.75rem;">Indexed starting from 0</span>
+            </div>
+
+            <div class="callout info">
+              <span style="font-size: 1.1rem;">ℹ️</span>
+              <div>
+                <strong>Computational Mapping:</strong> A vocabulary maps each unique token to a numerical ID so that a machine can work with text computationally.
+              </div>
+            </div>
+
+            <div class="callout warning">
+              <span style="font-size: 1.1rem;">⚠️</span>
+              <div>
+                <strong>Educational Distinction:</strong> This simulator implements a simplified <strong>word-level vocabulary tokenizer</strong> for conceptual clarity. Production LLMs like GPT-4 or Llama 3 use <strong>subword tokenization</strong> (such as Byte-Pair Encoding or WordPiece) with 32,000 to 100,000+ subword units to seamlessly handle suffixes, rare words, code, and multiple languages.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PART 2: WORD EMBEDDING EXPLORER -->
+      <section id="section-embedding-explorer">
+        <div class="section-header">
+          <span class="section-tag indigo">02 — Word Embedding Explorer</span>
+          <h2 class="section-title">Vector Space & Embedding Generation</h2>
+          <p class="section-desc">
+            Discover how words are transformed into numerical vectors. Compare how spelling patterns vs semantic meanings reorganize geometric space.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title-row">
+            <span class="card-label">Corpus for Word Embeddings</span>
+            <button id="sync-vocab-btn" class="btn-link">Sync with Vocabulary Text</button>
+          </div>
+
+          <textarea
+            id="embedding-input"
+            class="text-input-field"
+            rows="3"
+            placeholder="Enter 5–10 sentences to explore word embeddings..."
+          ></textarea>
+
+          <!-- Embedding Representation Selection Cards -->
+          <div style="margin-top: 1.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+              <span class="card-label">Embedding Representation Algorithm</span>
+              <span id="badge-embedding-method" class="font-mono text-muted" style="font-size: 0.75rem;">
+                Method: Character N-Gram & Morphological Projection
+              </span>
+            </div>
+
+            <div class="mode-selector-grid">
+              <!-- Option A: Spelling -->
+              <div id="card-mode-spelling" class="mode-card selected">
+                <div>
+                  <div class="mode-card-header">
+                    <div class="mode-title-group">
+                      <div class="mode-icon">🔤</div>
+                      <div>
+                        <div class="mode-card-title">Spelling-Based Embeddings</div>
+                        <div class="mode-card-sub">Character & Morphological Patterns</div>
+                      </div>
+                    </div>
+                    <input type="radio" id="radio-mode-spelling" name="embedding-mode" checked />
+                  </div>
+                  <div class="mode-card-body">
+                    <p>
+                      Represent words using their character and spelling patterns. Words with shared roots, prefixes, or suffixes (e.g., <em>learn</em>, <em>learning</em>, <em>learner</em>) cluster tightly together.
+                    </p>
+                  </div>
+                </div>
+                <div class="mode-card-footer">
+                  <strong>Algorithm:</strong> Character n-grams, length, vowel ratio, prefix/suffix hash
+                </div>
+              </div>
+
+              <!-- Option B: Meaning -->
+              <div id="card-mode-semantic" class="mode-card semantic-card">
+                <div>
+                  <div class="mode-card-header">
+                    <div class="mode-title-group">
+                      <div class="mode-icon">🧠</div>
+                      <div>
+                        <div class="mode-card-title">Meaning-Based Embeddings</div>
+                        <div class="mode-card-sub">Semantic Relationships & Context</div>
+                      </div>
+                    </div>
+                    <input type="radio" id="radio-mode-semantic" name="embedding-mode" />
+                  </div>
+                  <div class="mode-card-body">
+                    <p>
+                      Represent words using their semantic relationships and contextual meanings. Words with conceptual ties (e.g., <em>king</em> and <em>queen</em>, <em>car</em> and <em>vehicle</em>) cluster closely regardless of spelling.
+                    </p>
+                  </div>
+                </div>
+                <div class="mode-card-footer">
+                  <strong>Algorithm:</strong> Calibrated 16-D Semantic Feature Space & PCA Projection
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <span class="text-muted" style="font-size: 0.78rem;">
+              Generating recalculates high-dimensional vectors and projects them onto 3D axes via PCA.
+            </span>
+            <button id="gen-embeddings-btn" class="btn-primary indigo">
+              📦 Generate Embeddings
+            </button>
+          </div>
+        </div>
+
+        <!-- 3D Visualization Canvas & Word Details Side Panel -->
+        <div id="section-3d-viz" class="visualization-layout">
+          <!-- 3D Canvas Container -->
+          <div id="viz-3d-container" class="viz-container">
+            <!-- Top Controls Floating Bar -->
+            <div class="viz-top-bar">
+              <div class="viz-status-badge">
+                <div class="pulse-dot"></div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.4rem;">
+                    <strong style="font-size: 0.8rem;">Vector Space (3D Projection)</strong>
+                    <span id="badge-viz-mode" class="mode-tag spelling">Spelling Coordinates</span>
+                  </div>
+                  <span class="text-muted" style="font-size: 0.7rem;">
+                    Drag to rotate • Scroll to zoom • Click word point to inspect
+                  </span>
+                </div>
+              </div>
+
+              <div class="viz-toolbar">
+                <button id="btn-viz-reset" class="tool-btn" title="Reset View">↺</button>
+                <button id="btn-viz-zoomin" class="tool-btn" title="Zoom In">+</button>
+                <button id="btn-viz-zoomout" class="tool-btn" title="Zoom Out">−</button>
+                <button id="btn-viz-labels" class="tool-btn active" title="Toggle Labels">🏷️</button>
+                <button id="btn-viz-lines" class="tool-btn active" title="Toggle Nearest Neighbor Lines">🕸️</button>
+                <button id="btn-viz-rotate" class="tool-btn" title="Toggle Auto-Rotation">▶</button>
+                <button id="btn-viz-grid" class="tool-btn active" title="Toggle Grid & Axes">🌐</button>
+                <button id="btn-viz-fullscreen" class="tool-btn" title="Fullscreen">⛶</button>
+              </div>
+            </div>
+
+            <!-- Canvas Element -->
+            <canvas id="viz-canvas"></canvas>
+
+            <!-- Bottom Legend -->
+            <div class="viz-bottom-bar">
+              <div class="viz-legend">
+                <strong>Categories:</strong>
+                <span class="legend-item"><span class="legend-dot" style="background:#2563eb;"></span> AI/Tech</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#7c3aed;"></span> Royalty</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#0284c7;"></span> Vehicles</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#16a34a;"></span> Food</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#d97706;"></span> Animals</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Word Details Panel -->
+          <div class="card details-card">
+            <!-- Empty state -->
+            <div id="word-details-empty" class="details-empty-state">
+              <div class="empty-icon">🧭</div>
+              <h4>No Word Selected</h4>
+              <p class="subtitle" style="max-width: 260px; margin-top: 0.5rem;">
+                Click any word in the 3D space, vocabulary table, or token sequence to inspect its vector and nearest neighbors.
+              </p>
+            </div>
+
+            <!-- Content state -->
+            <div id="word-details-content" class="hidden">
+              <div class="details-header">
+                <div>
+                  <div class="details-meta-row">
+                    <span id="detail-word-id" class="id-pill">ID: 0</span>
+                    <span id="detail-word-cat" class="cat-pill">Category</span>
+                  </div>
+                  <h3 id="detail-word-title" class="details-word-title">"word"</h3>
+                  <div id="detail-word-count" class="subtitle">Appears 1 time in corpus</div>
+                </div>
+
+                <button id="copy-vector-btn" class="btn-secondary" style="font-size: 0.75rem; padding: 0.35rem 0.65rem;">
+                  Copy Vector
+                </button>
+              </div>
+
+              <!-- 3D Coordinates -->
+              <div>
+                <div class="details-section-title">3D Projected Coordinates (PCA)</div>
+                <div class="coords-grid">
+                  <div class="coord-box">
+                    <div class="coord-axis">X-Axis</div>
+                    <strong id="coord-x">0.00</strong>
+                  </div>
+                  <div class="coord-box">
+                    <div class="coord-axis">Y-Axis</div>
+                    <strong id="coord-y">0.00</strong>
+                  </div>
+                  <div class="coord-box">
+                    <div class="coord-axis">Z-Axis</div>
+                    <strong id="coord-z">0.00</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 16D Vector Bar Chart -->
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <span class="details-section-title">Dense Vector (v ∈ ℝ¹⁶)</span>
+                  <span class="font-mono text-muted" style="font-size: 0.7rem;">Unit Norm: 1.00</span>
+                </div>
+                <div id="detail-vector-bars" class="vector-bars-grid"></div>
+              </div>
+
+              <!-- Algorithmic Features -->
+              <div>
+                <div class="details-section-title">Algorithmic Features</div>
+                <div id="detail-features-grid" class="features-grid"></div>
+              </div>
+
+              <!-- Top Nearest Neighbors -->
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <span class="details-section-title">Top Nearest Neighbors</span>
+                  <span class="text-muted" style="font-size: 0.7rem;">Cosine Similarity</span>
+                </div>
+                <div id="detail-neighbors-list" class="neighbors-list"></div>
+              </div>
+
+              <!-- Pairwise Comparison -->
+              <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
+                <div class="details-section-title">Compare With Another Word</div>
+                <select id="compare-word-select" class="comparison-select">
+                  <option value="">Select word to compare...</option>
+                </select>
+
+                <div id="comparison-result-box" class="comparison-box hidden">
+                  <div class="comparison-header">
+                    <strong id="comp-pair-title">"wordA" ↔ "wordB"</strong>
+                    <span id="comp-cosine-val" class="comp-cosine-badge">Cosine: 0.0000</span>
+                  </div>
+                  <div class="comp-metrics-grid">
+                    <div>Dot Product: <strong id="comp-dot-val">0.0000</strong></div>
+                    <div>Euclidean Dist: <strong id="comp-dist-val">0.0000</strong></div>
+                  </div>
+                  <p id="comp-explanation" class="text-muted" style="font-size: 0.75rem; margin-top: 0.25rem;"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dense Vectors Table -->
+        <div class="card table-card">
+          <div class="table-toolbar">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h3 style="font-size: 1.05rem;">Dense Numerical Vectors Table</h3>
+                <span id="embedding-count-badge" class="badge-tag">0 Vectors (16-D)</span>
+              </div>
+              <p class="subtitle">
+                Each word is represented by a 16-dimensional unit-normalized vector v ∈ ℝ¹⁶.
+              </p>
+            </div>
+
+            <div class="table-search-box">
+              <input type="text" id="embedding-search-input" placeholder="Search word or category..." />
+            </div>
+          </div>
+
+          <div class="table-frame">
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 70px;">ID</th>
+                    <th style="width: 140px;">Word</th>
+                    <th style="width: 170px;">Category</th>
+                    <th>Vector Values (v ∈ ℝ¹⁶)</th>
+                    <th style="width: 90px; text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="embedding-table-body">
+                  <!-- Populated by script.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PART 4: EXPLANATION PANEL -->
+      <section id="section-explanation" class="card">
+        <div class="section-header">
+          <span class="section-tag">Concept Breakdown</span>
+          <h2 class="section-title">What Just Happened?</h2>
+          <p class="section-desc">
+            Understand how our pipeline transformed human words into numerical coordinates and what each embedding algorithm represents.
+          </p>
+        </div>
+
+        <!-- Mode-Specific Explanation Box -->
+        <div id="explain-mode-card" class="explain-card mode-spelling">
+          <h3 id="explain-mode-title" style="font-size: 1.1rem; margin-bottom: 0.5rem;">
+            Active Mode: Spelling-Based Embeddings
+          </h3>
+          <p id="explain-mode-desc" style="font-size: 0.88rem; line-height: 1.6;">
+            The model represents words using numerical features derived from character patterns, word lengths, and morphological affixes. Words with shared roots or letters cluster near each other.
+          </p>
+
+          <div class="examples-grid">
+            <div class="example-box">
+              <div class="example-title">👑 King & Queen</div>
+              <div id="ex-king-queen" class="example-text">
+                Distant in spelling mode due to disjoint letter sequences.
+              </div>
+            </div>
+
+            <div class="example-box">
+              <div class="example-title">🚗 Car & Vehicle</div>
+              <div id="ex-car-vehicle" class="example-text">
+                Distant in spelling mode due to different character lengths and initial letters.
+              </div>
+            </div>
+
+            <div class="example-box">
+              <div class="example-title">🍎 Apple & Banana</div>
+              <div id="ex-apple-banana" class="example-text">
+                Separated in spelling mode due to distinct prefixes.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vector Analogy Playground -->
+        <div class="analogy-card">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h3 style="font-size: 1.05rem;">Interactive Vector Arithmetic (The Famous Analogy)</h3>
+              <p class="subtitle">
+                Because embeddings represent concepts as continuous direction vectors, algebraic operations reflect conceptual transformations:
+              </p>
+            </div>
+            <span class="font-mono badge-tag" style="font-size: 0.75rem;">vec(A) − vec(B) + vec(C) ≈ vec(?)</span>
+          </div>
+
+          <div class="analogy-inputs-grid">
+            <div class="analogy-input-item">
+              <label>Word A (e.g. king)</label>
+              <input type="text" id="analogy-input-a" value="king" />
+            </div>
+            <div class="analogy-input-item">
+              <label>Minus Word B (e.g. man)</label>
+              <input type="text" id="analogy-input-b" value="man" />
+            </div>
+            <div class="analogy-input-item">
+              <label>Plus Word C (e.g. woman)</label>
+              <input type="text" id="analogy-input-c" value="woman" />
+            </div>
+          </div>
+
+          <div id="analogy-result-container"></div>
+        </div>
+
+        <!-- 6 Core Pillars Grid -->
+        <div style="margin-top: 2rem;">
+          <h3 style="font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 1rem;">
+            Core Pillars of the LLM Representation Pipeline
+          </h3>
+
+          <div class="pillars-grid">
+            <div class="pillar-card">
+              <div class="pillar-title c1">📖 1. Tokenization</div>
+              <p>
+                Converting unstructured text strings into discrete atomic units (words, punctuation, or subword tokens). Models cannot process raw strings directly without tokenization.
+              </p>
+            </div>
+
+            <div class="pillar-card">
+              <div class="pillar-title c2">📚 2. Vocabulary</div>
+              <p>
+                The fixed dictionary of all allowable tokens known to the model. Every entry has a designated integer ID from 0 to |V|−1.
+              </p>
+            </div>
+
+            <div class="pillar-card">
+              <div class="pillar-title c3">🔢 3. Token IDs (Not Embeddings!)</div>
+              <p>
+                Arbitrary scalar integers. Token ID 42 is <strong>not</strong> "twice" Token ID 21. Scalar integer IDs carry zero geometric or semantic relationship.
+              </p>
+            </div>
+
+            <div class="pillar-card">
+              <div class="pillar-title c4">📦 4. Dense Embeddings (v ∈ ℝᵈ)</div>
+              <p>
+                The Embedding Lookup Matrix E ∈ ℝ^(|V| × d) maps each Token ID to a continuous dense vector. In production LLMs, d is 4,096 to 12,288 dimensions.
+              </p>
+            </div>
+
+            <div class="pillar-card">
+              <div class="pillar-title c5">🧭 5. High-Dimensional Vector Space</div>
+              <p>
+                The continuous geometric manifold where spatial angles and distances correspond to conceptual relationships. 3D projection (PCA) makes this visually tangible.
+              </p>
+            </div>
+
+            <div class="pillar-card">
+              <div class="pillar-title c6">📐 6. Cosine Similarity (cos θ)</div>
+              <p>
+                Measuring the directional angle θ between vectors via (u · v) / (||u|| · ||v||), ensuring word frequency or vector scale does not distort conceptual alignment.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 4. Footer -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <strong>LLM Pipeline Explorer</strong> • Interactive Educational Machine Learning Laboratory
+        </div>
+        <div>
+          Text Input → Vocabulary → Token IDs → Embeddings → Vector Space
+        </div>
+      </div>
+    </footer>
+
+    <!-- Main Vanilla JavaScript Controller (ES6 Module) -->
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
